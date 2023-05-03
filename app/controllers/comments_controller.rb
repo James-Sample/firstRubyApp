@@ -1,8 +1,18 @@
 class CommentsController < ApplicationController
+  # We also want to allow only authenticated users to delete comments
+  http_basic_authenticate_with name: "dhh", password: "secret", only: :destroy
+
   def create
     @article = Article.find(params[:article_id])
     @comment = @article.comments.create(comment_params)
     redirect_to article_path(@article)  # calls the show action of the ArticlesController which in turn renders the show.html.erb template
+  end
+
+  def destroy
+    @article = Article.find(params[:article_id])
+    @comment = @article.comments.find(params[:id])
+    @comment.destroy
+    redirect_to article_path(@article), status: :see_other
   end
 
   private
